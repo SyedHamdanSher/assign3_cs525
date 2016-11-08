@@ -798,6 +798,14 @@ RC createTable (char *name, Schema *schema){
 		sValue[length] = '\0';
 		(*value)->v.stringV = sValue;
 	}
+
+	RC freeRecord (Record *record){
+	 /* free the memory space allocated to record and its data */
+    	free(record->data);
+    	free(record);
+
+    	return RC_OK;
+	}
 	
 	//get the attribute 
 	RC getAttr (Record *record, Schema *schema, int attrNum, Value **value){
