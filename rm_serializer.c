@@ -159,8 +159,9 @@ serializeRecord(Record *record, Schema *schema)
 
   for(i = 0; i < schema->numAttr; i++)
     {
+      
+      APPEND(result, "%s", (i == 0) ? "" : ",");        
       APPEND_STRING(result, serializeAttr (record, schema, i));
-      APPEND(result, "%s", (i == 0) ? "" : ",");
     }
   
   APPEND_STRING(result, ")");

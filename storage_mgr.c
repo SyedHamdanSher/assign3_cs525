@@ -18,39 +18,42 @@ void initStorageManager(void){
 
 }
 
+void allocateMemory(char **total){
+	*total = (char *) (calloc(PAGE_SIZE, sizeof(char))); 
+}
+
 //This creates a pagefile and intializes a memory allocation using calloc
 RC createPageFile (char *fileName) {
 
-    file=fopen(fileName,"w");
-	char *pointer=(char *)calloc(PAGE_SIZE,sizeof(char));//reserving the space of PAGE_SIZE
-	fwrite(pointer,PAGE_SIZE,sizeof(char),file); //writing to the file
-	fclose(file);
-	free(pointer);
-	return RC_OK;
+    file = fopen(fileName, "w");
+    int totalSize;
+	//memory allocation
+	char *total; 
+	allocateMemory(&total);
+    strcat(total,"1\t");
+    totalSize=fwrite(total, sizeof(char), PAGE_SIZE, file);
+    fclose(file);
+    return RC_OK;
 
 }
 
 //Opens an existing page file,fields of this file handle should be initialized with the information about the opened file.
 RC openPageFile (char *fileName, SM_FileHandle *fHandle) {
-    int fileSize,filePageCount;
-	FILE *file;		
-	//if file cannot be opened or its not exist
-	if(!(file=fopen(fileName,"r"))){
-		RC_message="Desired file doesn't exist";
-		return RC_FILE_NOT_FOUND;
-	}else{
-	//opening a file in read mode and populating the fHandle structure with important information.
-	file=fopen(fileName,"r");
-	fHandle->mgmtInfo=file;
-	fHandle->fileName=fileName;
-	fHandle->curPagePos=0;
-	fseek(file,0,SEEK_END);//seeking throgh end of file.
-	fileSize=ftell(file);
-	//counting number of pages in file.
-	filePageCount=fileSize/PAGE_SIZE;
-	fHandle->totalNumPages=filePageCount;
-	return RC_OK;
-	}		
+    FILE *file;
+	char *string=(char *) calloc(PAGE_SIZE, sizeof(char));
+	if(!(file=fopen(fileName,"r+"))){
+			RC_message="Desired file doesn't exist";
+			return RC_FILE_NOT_FOUND;
+		}
+		else{
+        fgets(string, PAGE_SIZE, file);
+		fHandle->curPagePos = 0;
+        string = strtok(string, "\t");
+        fHandle->mgmtInfo = file;
+        fHandle->totalNumPages = atoi(string);
+        fHandle->fileName = fileName;
+        return RC_OK;
+	}
 }
 
 
@@ -162,16 +165,17 @@ RC appendEmptyBlock (SM_FileHandle *fHandle) {
 //Increase the number of pages in the file by one. The new last page should be filled with zero bytes.
 	int totalBytes;
 		FILE *file;
-		if(fHandle!=NULL){
-			file=fopen(fHandle->fileName,"a");//opening a file in append mode
-			fHandle->totalNumPages+=1;//updating total number of pages in file
-			fseek(file,(((fHandle->totalNumPages+1)*PAGE_SIZE)),SEEK_END);//seek to end of file for append operation
-			char *pointer=(char *)calloc(PAGE_SIZE,sizeof(char));
-			fwrite(pointer,PAGE_SIZE,sizeof(char),file);//writing an empty block to file
-			//fHandle->curPagePos=fHandle->totalNumPages;//updating current block page pointer of file
-			free(pointer);//freeing the occupied memory
-			fclose(file);//closing of file
-			return RC_OK;
+		SM_PageHandle pageHandle;
+			if(fHandle!=NULL){
+			pageHandle = (char *) calloc(PAGE_SIZE, sizeof(char));
+			fseek(fHandle->mgmtInfo,(((fHandle->totalNumPages+1)*PAGE_SIZE))*sizeof(char),SEEK_END);
+			fwrite(pageHandle,PAGE_SIZE,sizeof(char),file);
+			fHandle->totalNumPages = fHandle->totalNumPages + 1;
+			fHandle->curPagePos = fHandle->totalNumPages;
+			rewind(fHandle->mgmtInfo);
+			fprintf(fHandle->mgmtInfo, "%d\n" , fHandle->totalNumPages);
+			fseek(fHandle->mgmtInfo, (fHandle->totalNumPages + 1)*PAGE_SIZE*sizeof(char), SEEK_SET);
+			free(pageHandle);
 		}else{
 			RC_message="desired file related data is not initialized";
 			return RC_FILE_HANDLE_NOT_INIT;
