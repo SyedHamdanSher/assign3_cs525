@@ -7,7 +7,7 @@
 #include"buffer_mgr.h"
 #include"record_mgr.h"
 #include"tables.h"
-#include"definition.h"
+#include"rm_serializer.h"
 
 void updateRecordInfo(Record *record, int pageNumber,int slotNumber);
 	//tombstone Node used for efficient management of memory in case of
@@ -36,11 +36,11 @@ struct recordTableInfo{
 typedef struct recordTableInfo* recordNode;
 
 
-typedef struct VariabString {
+/*typedef struct VariabString {
     char *buf;
     int size;
     int bufsize;
-} VarString;
+} VarString;*/
 
 
 //used during scanning of record

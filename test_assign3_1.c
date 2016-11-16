@@ -80,7 +80,6 @@ main (void)
 {
   testName = "";
 
-  //testInsertManyRecords();
   testRecords();
   testCreateTableAndInsert();
   testUpdateTable();

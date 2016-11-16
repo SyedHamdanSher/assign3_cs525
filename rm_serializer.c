@@ -5,8 +5,9 @@
 #include "dberror.h"
 #include "tables.h"
 #include "record_mgr.h"
+#include "rm_serializer.h"
 
-// dynamic string
+/*// dynamic string
 typedef struct VarString {
   char *buf;
   int size;
@@ -65,10 +66,10 @@ typedef struct VarString {
     sprintf(tmp, __VA_ARGS__);			\
     APPEND_STRING(var,tmp);			\
     free(tmp);					\
-  } while(0)
+  } while(0)*/
 
 // prototypes
-static RC attrOffset (Schema *schema, int attrNum, int *result);
+//static RC attrOffset (Schema *schema, int attrNum, int *result);
 
 // implementations
 char *
