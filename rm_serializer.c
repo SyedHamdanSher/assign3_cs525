@@ -159,11 +159,10 @@ serializeRecord(Record *record, Schema *schema)
   APPEND(result, "[%i-%i] (", record->id.page, record->id.slot);
 
   for(i = 0; i < schema->numAttr; i++)
-    {
-      
-      APPEND(result, "%s", (i == 0) ? "" : ",");        
-      APPEND_STRING(result, serializeAttr (record, schema, i));
-    }
+  { 
+    APPEND_STRING(result, serializeAttr (record, schema, i));
+    APPEND(result, "%s", (i == ((schema->numAttr)-1)) ? "" : ",");
+  }
   
   APPEND_STRING(result, ")");
 
