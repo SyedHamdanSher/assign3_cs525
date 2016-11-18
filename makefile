@@ -10,4 +10,4 @@ test_assign3_1.exe: test_assign3_1.c
 expr: test_expr.o rm_serializer.o record_mgr.o buffer_mgr.o expr.o  storage_mgr.o buffer_mgr_stat.o  dberror.o
 	gcc -o expr record_mgr.o test_expr.o expr.o buffer_mgr_stat.o rm_serializer.o buffer_mgr.o  storage_mgr.o dberror.o -I. -lm
 clean:
-	rm	test_assign3_1.exe expr.exe storage_mgr.h.gch test_assign3_1.o dberror.h.gch test_helper.h.gch buffer_mgr.h.gch,record_mgr.h.gch
+	rm	test_assign3_1
